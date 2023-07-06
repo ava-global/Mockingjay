@@ -61,7 +61,7 @@ class MockingjayAsyncProtocolTests: XCTestCase, URLSessionDataDelegate  {
   
   func testDownloadOfAudioFileInChunks() {
     let request = URLRequest(url: URL(string: "https://fuller.li/")!)
-    let path = Bundle(for: self.classForCoder).path(forResource: "TestAudio", ofType: "m4a")
+    let path = Bundle.module.path(forResource: "TestAudio", ofType: "m4a")
     let data = try! Data(contentsOf: URL(fileURLWithPath: path!))
     
     let stubResponse = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: ["Content-Length" : String(data.count)])!
@@ -91,14 +91,14 @@ class MockingjayAsyncProtocolTests: XCTestCase, URLSessionDataDelegate  {
     let length = 100000
     var request = URLRequest(url: URL(string: "https://fuller.li/")!)
     request.addValue("bytes=50000-149999", forHTTPHeaderField: "Range")
-    let path = Bundle(for: self.classForCoder).path(forResource: "TestAudio", ofType: "m4a")
+    let path = Bundle.module.path(forResource: "TestAudio", ofType: "m4a")
     let data = try! Data(contentsOf: URL(fileURLWithPath: path!))
     
     let stubResponse = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: ["Content-Length" : String(length)])!
     MockingjayProtocol.addStub(matcher: { (requestedRequest) -> (Bool) in
       return true
     }) { (request) -> (Response) in
-      return Response.success(stubResponse, .streamContent(data: data, inChunksOf: 2000))
+        return Response.success(stubResponse, .streamContent(data: data, inChunksOf: 2000))
     }
     
     let urlSession = Foundation.URLSession(configuration: configuration, delegate: self, delegateQueue: OperationQueue.current)
